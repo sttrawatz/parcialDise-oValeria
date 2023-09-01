@@ -149,6 +149,11 @@ public class vistaCRUDEmpleados extends javax.swing.JFrame {
         jLabel8.setText("Direccion:");
 
         btnBuscar.setText("BUSCAR");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
 
         btnAgregar.setText("AGREGAR");
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
@@ -330,7 +335,7 @@ public class vistaCRUDEmpleados extends javax.swing.JFrame {
             //preparar la consulta sql y guardar el nuevo dato a la base de datos
             ps = con.prepareStatement("INSERT INTO empleado (nombre, cedula, edad, telefono, correo, cargo, direccionVivienda) VALUES (?,?,?,?,?,?,?)");
             ps.setString(1, txtNombre.getText());
-            ps.setString(2, txtCedulaBuscar.getText());
+            ps.setString(2, txtCedula.getText());
             ps.setString(3, txtEdad.getText());
             ps.setString(4, txtTelefono.getText());
             ps.setString(5, txtCorreo.getText());
@@ -356,9 +361,65 @@ public class vistaCRUDEmpleados extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnAgregarActionPerformed
 
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        // TODO add your handling code here:
+        DefaultTableModel modelo = new DefaultTableModel();
+        tabla.setModel(modelo);
+        
+        String campo = txtCedulaBuscar.getText();
+        String where = "";
+
+        if (!"".equals(campo)) {
+            where = " WHERE cedula = '" + campo + "'";
+
+        }
+
+        try {
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+
+            ConeccionDB conn = new ConeccionDB();
+            Connection con = conn.getConexion();
+
+            String sql = "SELECT * FROM empleado" + where;
+
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            ResultSetMetaData rsMd = (ResultSetMetaData) rs.getMetaData();
+            int cantidadColumnas = rsMd.getColumnCount();
+
+            modelo.addColumn("Nombre");
+            modelo.addColumn("Cedula");
+            modelo.addColumn("Edad");
+            modelo.addColumn("Teléfono");
+            modelo.addColumn("Correo");
+            modelo.addColumn("Cargo");
+            modelo.addColumn("Dirección");
+            
+            int[] anchos = {420, 320, 320, 320, 620, 420, 420};
+            for (int i = 0; i < tabla.getColumnCount(); i++) {
+                tabla.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
+            }
+            
+            while (rs.next()) {
+                Object[] filas = new Object[cantidadColumnas];
+                for (int i = 0; i < cantidadColumnas; i++) {
+                    filas[i] = rs.getObject(i + 1);
+
+                }
+                modelo.addRow(filas);
+            }
+
+        } catch (SQLException ex) {
+            System.err.print(ex.toString());
+        }
+
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
    public void limpiarCampos(){
         txtNombre.setText("");
-        txtCedulaBuscar.setText("");
+        txtCedula.setText("");
         txtEdad.setText("");
         txtCorreo.setText("");
         txtTelefono.setText("");
