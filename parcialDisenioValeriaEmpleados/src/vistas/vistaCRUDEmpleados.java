@@ -103,6 +103,7 @@ public class vistaCRUDEmpleados extends javax.swing.JFrame {
         btnRegresar = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
         txtCedula = new javax.swing.JTextField();
+        codigo1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -122,6 +123,11 @@ public class vistaCRUDEmpleados extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tabla.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tabla);
 
         jLabel3.setText("Nombre:");
@@ -163,8 +169,18 @@ public class vistaCRUDEmpleados extends javax.swing.JFrame {
         });
 
         btnModificar.setText("MODIFICAR");
+        btnModificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnModificarActionPerformed(evt);
+            }
+        });
 
         btnEliminar.setText("ELIMINAR");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
 
         btnRegresar.setText("🡰");
         btnRegresar.addActionListener(new java.awt.event.ActionListener() {
@@ -175,10 +191,18 @@ public class vistaCRUDEmpleados extends javax.swing.JFrame {
 
         jLabel9.setText("Cedula:");
 
+        codigo1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        codigo1.setForeground(new java.awt.Color(102, 102, 102));
+        codigo1.setText("Seleccione un elemento de la tabla para conocer sus detalles");
+
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
         panel.setLayout(panelLayout);
         panelLayout.setHorizontalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addGap(440, 440, 440))
             .addGroup(panelLayout.createSequentialGroup()
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelLayout.createSequentialGroup()
@@ -234,12 +258,11 @@ public class vistaCRUDEmpleados extends javax.swing.JFrame {
                                     .addComponent(txtCedula, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(panelLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(btnRegresar)))
+                        .addComponent(btnRegresar))
+                    .addGroup(panelLayout.createSequentialGroup()
+                        .addGap(70, 70, 70)
+                        .addComponent(codigo1)))
                 .addContainerGap(80, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(440, 440, 440))
         );
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -285,7 +308,9 @@ public class vistaCRUDEmpleados extends javax.swing.JFrame {
                             .addComponent(btnModificar)
                             .addComponent(btnEliminar)))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(codigo1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
                 .addComponent(btnRegresar)
                 .addContainerGap())
         );
@@ -347,7 +372,7 @@ public class vistaCRUDEmpleados extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "empleado guardado");
             Object[] fila = new Object[7];
             fila[0] = txtNombre.getText();
-            fila[1] = txtCedulaBuscar.getText();
+            fila[1] = txtCedula.getText();
             fila[2] = txtEdad.getText();
             fila[3] = txtTelefono.getText();
             fila[4] = txtCorreo.getText();
@@ -417,6 +442,79 @@ public class vistaCRUDEmpleados extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnBuscarActionPerformed
 
+    private void tablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMouseClicked
+        // TODO add your handling code here:
+        int seleccionado = tabla.getSelectedRow();
+
+        txtNombre.setText(tabla.getValueAt(seleccionado, 0).toString());
+        txtCedula.setText(tabla.getValueAt(seleccionado, 1).toString());
+        txtEdad.setText(tabla.getValueAt(seleccionado, 2).toString());
+        txtTelefono.setText(tabla.getValueAt(seleccionado, 3).toString());
+        txtCorreo.setText(tabla.getValueAt(seleccionado, 4).toString());
+        txtCargo.setText(tabla.getValueAt(seleccionado, 5).toString());
+        txtDireccion.setText(tabla.getValueAt(seleccionado, 6).toString());
+        
+    }//GEN-LAST:event_tablaMouseClicked
+
+    private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
+        // TODO add your handling code here:
+                // TODO add your handling code here:
+
+        int seleccionado = tabla.getSelectedColumn();
+
+        PreparedStatement ps = null;
+        try {
+            ConeccionDB objCon = new ConeccionDB();
+            Connection conn = objCon.getConexion();
+
+            ps = conn.prepareStatement("UPDATE empleado SET nombre=?, edad=?, telefono=?, correo=?, cargo=?, direccionVivienda=?  WHERE cedula=?");
+
+            ps.setString(1, txtNombre.getText());
+            ps.setString(2, txtEdad.getText());
+            ps.setString(3, txtTelefono.getText());
+            ps.setString(4, txtCorreo.getText());
+            ps.setString(5, txtCargo.getText());
+            ps.setString(6, txtDireccion.getText());            
+            ps.setString(7, txtCedula.getText());
+            
+            ps.execute();
+
+            JOptionPane.showMessageDialog(null, "empleado modificado correctamente");
+
+           cargarTabla();
+           limpiarCampos();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al modificar al empleado");
+            System.err.println(ex);
+        }
+    }//GEN-LAST:event_btnModificarActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        // TODO add your handling code here:
+        PreparedStatement ps = null;
+        try {
+
+            ConeccionDB objCon = new ConeccionDB();
+            Connection conn = objCon.getConexion();
+
+            int Fila = tabla.getSelectedRow();
+            String cedula = tabla.getValueAt(Fila, 1).toString();
+
+            ps = conn.prepareStatement("DELETE FROM empleado WHERE cedula=?");
+            ps.setString(1, cedula);
+            ps.execute();
+
+            modelo.removeRow(Fila);
+            JOptionPane.showMessageDialog(null, "Empleado Eliminado");
+            limpiarCampos();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al Eliminar empleado");
+            System.out.println(ex.toString());
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
    public void limpiarCampos(){
         txtNombre.setText("");
         txtCedula.setText("");
@@ -426,6 +524,51 @@ public class vistaCRUDEmpleados extends javax.swing.JFrame {
         txtCargo.setText("");
         txtDireccion.setText("");
     }
+   
+   public void cargarTabla(){
+       try {
+           DefaultTableModel modelo = new DefaultTableModel();
+            tabla.setModel(modelo); 
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+            
+            ConeccionDB conn = new ConeccionDB();
+            Connection con = conn.getConexion();
+
+            String sql = "SELECT * FROM empleado";
+
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            ResultSetMetaData rsMd = (ResultSetMetaData) rs.getMetaData();
+            int cantidadColumnas = rsMd.getColumnCount();
+
+            modelo.addColumn("Nombre");
+            modelo.addColumn("Cedula");
+            modelo.addColumn("Edad");
+            modelo.addColumn("Teléfono");
+            modelo.addColumn("Correo");
+            modelo.addColumn("Cargo");
+            modelo.addColumn("Dirección");
+
+            int[] anchos = {420, 320, 320, 320, 620, 420, 420};
+            for (int i = 0; i < tabla.getColumnCount(); i++) {
+                tabla.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
+            }
+            
+            while (rs.next()) {
+                Object[] filas = new Object[cantidadColumnas];
+                for (int i = 0; i < cantidadColumnas; i++) {
+                    filas[i] = rs.getObject(i + 1);
+
+                }
+                modelo.addRow(filas);
+            }
+   
+        } catch (SQLException ex) {
+            System.err.print(ex.toString());
+        }
+   }
     /**
      * @param args the command line arguments
      */
@@ -467,6 +610,7 @@ public class vistaCRUDEmpleados extends javax.swing.JFrame {
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnRegresar;
+    private javax.swing.JLabel codigo1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
